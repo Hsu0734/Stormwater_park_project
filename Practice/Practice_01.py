@@ -1,7 +1,7 @@
 '''
 PySWMM Code Example
 Author: Hanwen Xu
-输出所有基本信息
+输出基本信息/ Basic information output
 Version: 1
 Date: May 14, 2023
 '''
@@ -72,6 +72,7 @@ for ind, idd in enumerate(IDS):
         your_model.getLinkConnections(idd), )
 
 print("SUBCATCH ID")
+print('ID,area,OutConnections')
 IDS = your_model.getObjectIDList(tka.ObjectType.SUBCATCH.value)
 print(IDS)
 for ind, idd in enumerate(IDS):
