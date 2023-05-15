@@ -18,8 +18,7 @@ SS1 = []
 # 创建Subcatchments，Nodes, Links集合
 # 查找所有子汇水区 All Subcatchments
 subcatchments = Subcatchments(sim)
-for i in range (1, 3, 1):
-    S1 = subcatchments.__getitem__('S{i}')
+S1 = subcatchments.__getitem__('S1')
 for step in sim:
     time_stamps.append(sim.current_time)
     SS1.append(S1.runoff)
