@@ -1,47 +1,64 @@
 '''
 PySWMM Code Example
-查找指定汇水区、节点、链接、整个系统在指定时间的所有属性 Output
+输出系统数据 SystemStat data
 Author: Hanwen Xu
 Version: 1
-Date: May 15, 2023
+Date: April 30, 2023
 '''
 
-from pyswmm import Output
-from datetime import datetime
+from pyswmm import Simulation, SystemStats
+import matplotlib.pyplot as plt
+import matplotlib.dates as mdates
 
-with Output("../Jiangning.out") as out:
+sim = Simulation("..\Jiangning.inp")
+system_routing = SystemStats(sim)
+time_stamps = []
+S1 = []
+S2 = []
+S3 = []
+S4 = []
+S5 = []
+S6 = []
 
-# the whole model information
-    print(len(out.subcatchments))
-    #查看汇水区数量
-    print(len(out.nodes))
-    # 查看节点数量
-    print(len(out.links))
-    # 查看链接数量
+for step in sim:
+    time_stamps.append(sim.current_time)
+    runoff_stats = system_routing.runoff_stats
+    infiltration = runoff_stats.__getitem__('infiltration')
+    rainfall = runoff_stats.__getitem__('rainfall')
+    runoff = runoff_stats.__getitem__('runoff')
+
+    routing_stats = system_routing.routing_stats
+    outflow = routing_stats.__getitem__('outflow')
+    flooding = routing_stats.__getitem__('flooding')
+    wet_weather_inflow = routing_stats.__getitem__('wet_weather_inflow')
+
+    # print(system_routing.routing_stats)
+    S1.append(infiltration)
+    S2.append(rainfall)
+    S3.append(runoff)
+    S4.append(outflow)
+    S5.append(flooding)
+    S6.append(wet_weather_inflow)
 
 
-# 查找具体某个subcatchment, node, link, system在某一时刻的信息
-# specific subcatchment, node, link, system information
+# Drawing plots
+fig = plt.figure(figsize=(12, 8))
+fig.suptitle("System_Stats of Infiltration, Rainfall, Runoff, Outflow, Flooding")
+fig.set_tight_layout(True)
 
-    # Subcatchment
-    data = out.subcatch_result('S1', datetime(2018, 5, 2, 1, 5, 59)) #年，月，日，时，分，秒
-    for attribute in data:
-        print(attribute, data[attribute])
-    print()
+titles = ["Infiltration", "Rainfall", "Runoff", "Outflow", "Flooding", "wet_weather_inflow"]
+y_labels = ["Infiltration (CMS)", "Rainfall (CMS)", "Runoff (CMS)", "Outflow (CMS)", "Flooding (CMS)", "wet_weather_inflow (CMS)"]
+data = [S1, S2, S3, S4, S5, S6]
 
-    # Node
-    data2 = out.node_result('j1', datetime(2018, 5, 2, 1, 5, 59))
-    for attribute in data2:
-        print(attribute, data2[attribute])
-    print()
+for i in range(6):
+    subplot = plt.subplot(2, 3, i+1)
+    subplot.plot(time_stamps, data[i], label=titles[i])
+    subplot.xaxis.set_major_formatter(mdates.DateFormatter('%H:%M:%S'))
+    subplot.set_ylabel(y_labels[i])
+    subplot.set_xlabel("Time")
+    subplot.grid("xy")
+    subplot.tick_params(axis='x', rotation=30)
+    subplot.legend()
 
-    # Link
-    data3 = out.link_result('gq1', datetime(2018, 5, 2, 1, 5, 59))
-    for attribute in data3:
-        print(attribute, data3[attribute])
-    print()
-
-    # system
-    system_data = out.system_result(datetime(2018, 5, 2, 1, 5, 59))
-    for attribute in system_data:
-        print(attribute, system_data[attribute])
+plt.legend()
+plt.show()

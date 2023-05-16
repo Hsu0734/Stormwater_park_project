@@ -41,7 +41,7 @@ for subcatchment_name in subcatchment_names:
     fig01.grid("xy")
     fig01.legend()'''
 
-fig = plt.figure(figsize=(8,4), dpi=300) #Inches Width, Height
+fig = plt.figure(figsize=(8, 4), dpi=300) #Inches Width, Height
 fig.suptitle("Runoff Volume of Subcatchments")
 fig.set_tight_layout(True)
 # Plot from the results compiled during simulation time
